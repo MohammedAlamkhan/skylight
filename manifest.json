@@ -1,0 +1,8 @@
+{
+  "name": "Skylight Music",
+  "short_name": "Skylight Music",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000"
+}

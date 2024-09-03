@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skylight</title>
+    <script src="./pwa.js"></script>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            background-color: #000;
+            color: #fff;
+        }
+        .navbar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease;
+        }
+        .xbox-music-logo {
+            font-size: 5.5em;
+            font-weight: 200;
+            padding: 10px 20px;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+        .pivot-controls {
+            display: flex;
+            transition: transform 0.3s ease;
+        }
+        .pivot-controls h2 {
+            padding: 0 20px;
+            margin: 0;
+            white-space: nowrap;
+            font-weight: 300;
+            font-size: 4em;
+            cursor: pointer;
+        }
+        .pivot-slide h2 {
+            margin: 0;
+            white-space: nowrap;
+            font-weight: 200;
+            font-size: 4em;
+            cursor: pointer;
+            padding-top: 20px;
+        }
+        .pivot-active {
+            font-weight: 600;
+        }
+        .pivot-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+        }
+        .pivot {
+            display: flex;
+            height: 100%;
+            transition: transform 0.3s ease;
+            will-change: transform;
+        }
+        .pivot-slide {
+            flex-shrink: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            padding: 25% 20px 40px;
+            box-sizing: border-box;
+        }
+        .background-image {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 300%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.3s ease;
+            z-index: -1;
+        }
+        .content-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+        .content-list li {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-weight: 500;
+        }
+        .button {
+            display: inline-block;
+            background-color: #107C10;
+            color: #fff;
+            padding: 10px 20px;
+            text-decoration: none;
+            margin-right: 10px;
+            font-size: 1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-image" style="background-image: url('https://miro.medium.com/v2/resize:fit:1400/format:webp/1*tQBrh1rRDqFLRi9P-PtN9w.jpeg');"></div>
+    
+    <div class="navbar">
+        <div class="xbox-music-logo">music</div>
+        <!-- <div class="pivot-controls">
+            <h2 data-tab="collection">collection</h2>
+            <h2 data-tab="get-music">get music</h2>
+            <h2 data-tab="now-playing">now playing</h2>
+        </div> -->
+    </div>
+    <div class="pivot-wrapper">
+        <div class="pivot">
+            <div class="pivot-slide">
+                <h2>collection</h2>
+                <ul class="content-list">
+                    <li>artists</li>
+                    <li>albums</li>
+                    <li>songs</li>
+                    <li>genres</li>
+                    <li>playlists</li>
+                    <li>radio</li>
+                </ul>
+            </div>
+            <div class="pivot-slide">
+                <h2>get music</h2>
+                <a href="#" class="button">Top music</a>
+                <a href="#" class="button">Browse by genre</a>
+                <div style="margin-top: 20px;">
+                    <img src="https://picsum.photos/200/200" alt="Featured Artist" style="width: 200px; height: 200px; object-fit: cover;">
+                </div>
+            </div>
+            <div class="pivot-slide">
+                <h2>now playing</h2>
+                <div style="display: flex; align-items: center; margin-top: 20px;">
+                    <img src="https://picsum.photos/60/60" alt="Album Art" style="width: 60px; height: 60px; margin-right: 20px;">
+                    <div>
+                        <h3 style="margin: 0;">Song Title</h3>
+                        <p style="margin: 5px 0;">Artist Name</p>
+                    </div>
+                </div>
+                <div style="margin-top: 20px;">
+                    <button style="background: none; border: none; color: #fff; font-size: 1.5em; cursor: pointer; margin: 0 10px;">⏮</button>
+                    <button style="background: none; border: none; color: #fff; font-size: 1.5em; cursor: pointer; margin: 0 10px;">▶</button>
+                    <button style="background: none; border: none; color: #fff; font-size: 1.5em; cursor: pointer; margin: 0 10px;">⏭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   <script>
+    const navbar = document.querySelector('.navbar');
+    const pivot = document.querySelector('.pivot');
+    const pivotControls = document.querySelectorAll('.pivot-controls h2');
+    const backgroundImage = document.querySelector('.background-image');
+    const slides = document.querySelectorAll('.pivot-slide');
+    let currentIndex = 0;
+    let startX, isDragging = false;
+
+    function updatePivot() {
+        pivot.style.transform = `translateX(-${currentIndex * 100}%)`;
+        navbar.style.transform = `translateX(-${currentIndex * 100}px)`;
+        backgroundImage.style.transform = `translateX(-${(currentIndex % slides.length) * 100 / slides.length}%)`;
+        pivotControls.forEach((header, index) => {
+            header.classList.toggle('pivot-active', index === (currentIndex % slides.length));
+        });
+    }
+
+    function handleWheel(e) {
+        e.preventDefault();
+        const delta = Math.sign(e.deltaX);
+        if (delta > 0) {
+            currentIndex = (currentIndex + 1) % slides.length;
+        } else {
+            currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+        }
+        updatePivot();
+    }
+
+    function handleTouchStart(e) {
+        startX = e.touches[0].pageX;
+        isDragging = true;
+        pivot.style.transition = 'none';
+        navbar.style.transition = 'none';
+        backgroundImage.style.transition = 'none';
+    }
+
+    function handleTouchMove(e) {
+        if (!isDragging) return;
+        e.preventDefault();
+        const x = e.touches[0].pageX;
+        const moveDist = startX - x;
+        pivot.style.transform = `translateX(calc(${-currentIndex * 100}% - ${moveDist}px))`;
+        backgroundImage.style.transform = `translateX(calc(${-currentIndex * 100 / slides.length}% - ${moveDist / slides.length}px))`;
+    }
+
+    function handleTouchEnd(e) {
+        if (!isDragging) return;
+        const moveDist = startX - e.changedTouches[0].pageX;
+        const threshold = window.innerWidth * 0.2; // 20% of the screen width
+        if (moveDist > threshold) {
+            currentIndex = (currentIndex + 1) % slides.length;
+        } else if (moveDist < -threshold) {
+            currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+        }
+        pivot.style.transition = 'transform 0.3s ease';
+        navbar.style.transition = 'transform 0.3s ease';
+        backgroundImage.style.transition = 'transform 0.3s ease';
+        isDragging = false;
+        updatePivot();
+    }
+
+    pivot.addEventListener('wheel', handleWheel, { passive: false });
+    pivot.addEventListener('touchstart', handleTouchStart);
+    pivot.addEventListener('touchmove', handleTouchMove, { passive: false });
+    pivot.addEventListener('touchend', handleTouchEnd);
+
+    pivotControls.forEach((header, index) => {
+        header.addEventListener('click', () => {
+            currentIndex = index;
+            updatePivot();
+        });
+    });
+
+    updatePivot();
+</script>
+
+</body>
+</html>
